@@ -4,7 +4,7 @@ RUN echo 'Acquire::http::Proxy "http://192.168.117.1:3142";' > /etc/apt/apt.conf
 
 COPY openssl.cnf /etc/ssl/openssl.cnf
 
-RUN apt update && apt install wget nano build-essential openssl libssl-dev pkg-config -y && wget http://www.squid-cache.org/Versions/v5/squid-5.1.tar.gz && tar -xvf squid-5.1.tar.gz && \
+RUN apt update && DEBIAN_FRONTEND=noninteractive apt install wget nano build-essential openssl libssl-dev pkg-config -y && wget http://www.squid-cache.org/Versions/v5/squid-5.1.tar.gz && tar -xvf squid-5.1.tar.gz && \
 cd squid-5.1 && ./configure --with-default-user=proxy --with-openssl --enable-ssl-crtd && make && make install && mkdir /tmp/ssl_cert && cd /tmp/ssl_cert && \
 openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 -extensions v3_ca -keyout squid-self-signed.key -out squid-self-signed.crt \
 -subj /C=LK/ST=Northern/L=jaffna/O=linuxhub/OU=linuxhub/CN=piragenth/emailAddress=piragenth007@gmail.com && \

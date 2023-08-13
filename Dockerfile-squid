@@ -5,7 +5,7 @@ FROM ubuntu:latest
 COPY openssl.cnf /etc/ssl/openssl.cnf
 
 RUN apt update && echo "y" | apt install openssl -y && DEBIAN_FRONTEND=noninteractive apt install wget nano build-essential openssl libssl-dev pkg-config unzip -y && \
-cd /tmp/ && wget https://github.com/openssl/openssl/archive/refs/tags/OpenSSL_1_1_1j.zip && unzip openssl-OpenSSL_1_1_1j.zip && cd ./openssl-OpenSSL_1_1_1j/ && \
+cd /tmp/ && wget https://github.com/openssl/openssl/archive/refs/tags/OpenSSL_1_1_1j.zip && unzip OpenSSL_1_1_1j.zip && cd ./OpenSSL_1_1_1j/ && \
 ./config --prefix=/usr/local/openssl_1_1_1j --openssldir=/usr/local/openssl_1_1_1j/ssl && make && make install && \
 wget http://www.squid-cache.org/Versions/v5/squid-5.1.tar.gz && \tar -xvf squid-5.1.tar.gz && \
 cd squid-5.1 && ./configure --with-default-user=proxy --with-openssl --enable-ssl-crtd --with-openssl=/usr/local/openssl_1_1_1j/lib && make && make install && mkdir /tmp/ssl_cert && cd /tmp/ssl_cert && \

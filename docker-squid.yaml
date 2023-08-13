@@ -1,0 +1,16 @@
+
+services:
+  squid-https:
+    container_name: squid-https
+    image: piragenthdocker/squid:latest
+    restart: always
+    ports:
+      - 3128:3128
+#    command: /bin/bash
+    volumes:
+#      - /home/piragenth/Documents/ssl_cert/:/usr/local/squid/etc/ssl_cert/
+      - /usr/local/squid/var/cache:/usr/local/squid/var/cache
+#    command: ./squid.sh
+#    /bin/bash -c 'sudo sysctl -w net.ipv6.conf.eth0.disable_ipv6=0 && sudo sysctl -w net.ipv6.conf.lo.disable_ipv6=0 && while true; do sleep 1; done'
+    privileged: true
+#     cp -rf /tmp/ssl_cert/* /usr/local/squid/etc/ssl_cert && chown -R proxy:proxy /usr/local/squid

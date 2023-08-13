@@ -1,0 +1,26 @@
+FROM ubuntu:latest
+
+RUN echo 'Acquire::http::Proxy "http://192.168.117.1:3142";' > /etc/apt/apt.conf.d/00aptproxy
+
+COPY openssl.cnf /etc/ssl/openssl.cnf
+
+RUN apt update && apt install wget nano build-essential openssl libssl-dev pkg-config -y && wget http://www.squid-cache.org/Versions/v5/squid-5.1.tar.gz && tar -xvf squid-5.1.tar.gz && \
+cd squid-5.1 && ./configure --with-default-user=proxy --with-openssl --enable-ssl-crtd && make && make install && mkdir /tmp/ssl_cert && cd /tmp/ssl_cert && \
+openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 -extensions v3_ca -keyout squid-self-signed.key -out squid-self-signed.crt \
+-subj /C=LK/ST=Northern/L=jaffna/O=linuxhub/OU=linuxhub/CN=piragenth/emailAddress=piragenth007@gmail.com && \
+openssl x509 -in squid-self-signed.crt -outform DER -out squid-self-signed.der && \
+openssl x509 -in squid-self-signed.crt -outform PEM -out squid-self-signed.pem && \
+openssl dhparam -outform PEM -out squid-self-signed_dhparam.pem 2048 && \
+sudo cp -rf /tmp/ssl_cert /usr/local/squid/etc/ssl_cert && sudo cp /usr/local/squid/etc/ssl_cert/squid-self-signed.pem /usr/local/share/ca-certificates/squid-self-signed.crt && \
+sudo update-ca-certificates 
+
+COPY squid.conf /usr/local/squid/etc/squid.conf
+
+RUN sudo chown -R proxy:proxy /usr/local/squid && sudo -u proxy -- /usr/local/squid/libexec/security_file_certgen -c -s /usr/local/squid/var/logs/ssl_db -M 20MB && \
+sudo -u proxy -- /usr/local/squid/sbin/squid -z
+
+COPY squid-start.sh /squid-start.sh
+
+RUN chmod +x /squid-start.sh
+
+CMD ["/bin/bash -c /squid-start.sh"]

@@ -1,6 +1,6 @@
 FROM ubuntu:latest
 
-RUN echo 'Acquire::http::Proxy "http://192.168.117.1:3142";' > /etc/apt/apt.conf.d/00aptproxy
+# RUN echo 'Acquire::http::Proxy "http://192.168.117.1:3142";' > /etc/apt/apt.conf.d/00aptproxy
 
 COPY openssl.cnf /etc/ssl/openssl.cnf
 

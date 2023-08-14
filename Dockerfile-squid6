@@ -30,4 +30,4 @@ COPY squid-start.sh /squid-start.sh
 
 RUN chmod +x /squid-start.sh
 
-ENTRYPOINT [/bin/bash /squid-start.sh]
+ENTRYPOINT ["/squid-start.sh"]

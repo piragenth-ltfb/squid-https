@@ -1,15 +1,17 @@
 FROM ubuntu:latest
 
-RUN apt update && echo 'Acquire::http::Proxy "http://192.168.1.3:3142";' > /etc/apt/apt.conf.d/00aptproxy
+RUN echo 'Acquire::http::Proxy "http://192.168.117.0:3142";' > /etc/apt/apt.conf.d/00aptproxy && mkdir /etc/ssl/
 
 COPY openssl.cnf /etc/ssl/openssl.cnf
 
-RUN echo "y" | apt install openssl -y && DEBIAN_FRONTEND=noninteractive apt install sudo wget nano build-essential openssl libssl-dev pkg-config unzip -y && \
+RUN apt update && echo "y" | apt install openssl -y && DEBIAN_FRONTEND=noninteractive apt install sudo wget nano build-essential openssl libssl-dev pkg-config unzip -y && \
 cd /tmp/ && wget https://github.com/openssl/openssl/archive/refs/tags/OpenSSL_1_1_1j.zip && unzip OpenSSL_1_1_1j.zip && cd ./openssl-OpenSSL_1_1_1j/ && \
 ./config --prefix=/usr/local/openssl_1_1_1j --openssldir=/usr/local/openssl_1_1_1j/ssl && make && make install 
 
 RUN cd / && wget http://www.squid-cache.org/Versions/v5/squid-5.1.tar.gz && tar -xvf squid-5.1.tar.gz && \
-cd squid-5.1 && ./configure --with-default-user=proxy --with-openssl --enable-ssl-crtd --with-openssl=/usr/local/openssl_1_1_1j/lib && make && make install && mkdir /tmp/ssl_cert && cd /tmp/ssl_cert && \
+cd squid-5.1 && ./configure --with-default-user=proxy --with-openssl --enable-ssl-crtd --with-openssl=/usr/local/openssl_1_1_1j/lib 
+
+RUN cd /squid-5.1 && make && make install && mkdir /tmp/ssl_cert && cd /tmp/ssl_cert && \
 openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 -extensions v3_ca -keyout squid-self-signed.key -out squid-self-signed.crt \
 -subj /C=LK/ST=Northern/L=jaffna/O=linuxhub/OU=linuxhub/CN=piragenth/emailAddress=piragenth007@gmail.com && \
 openssl x509 -in squid-self-signed.crt -outform DER -out squid-self-signed.der && \
@@ -22,10 +24,10 @@ COPY squid.conf /usr/local/squid/etc/squid.conf
 
 #sudo sudo sysctl -w net.ipv6.conf.eth0.disable_ipv6=0 && sudo sysctl -w net.ipv6.conf.lo.disable_ipv6=0  && sysctl -p && \
 RUN sudo chown -R proxy:proxy /usr/local/squid && sudo -u proxy -- /usr/local/squid/libexec/security_file_certgen -c -s /usr/local/squid/var/logs/ssl_db -M 20MB && \
-#sudo -u proxy -- /usr/local/squid/sbin/squid -z
+sudo -u proxy -- /usr/local/squid/sbin/squid -z
 
 COPY squid-start.sh /squid-start.sh
 
 RUN chmod +x /squid-start.sh
 
-CMD ["/bin/bash -c /squid-start.sh"]
+ENTRYPOINT ["./squid-start.sh"]

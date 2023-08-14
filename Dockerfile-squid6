@@ -21,14 +21,13 @@ sudo update-ca-certificates
 
 COPY squid.conf /usr/local/squid/etc/squid.conf
 
-# sudo sudo sysctl -w net.ipv6.conf.eth0.disable_ipv6=0 && sudo sysctl -w net.ipv6.conf.lo.disable_ipv6=0  && sysctl -p && \
-RUN sudo chown -R proxy:proxy /usr/local/squid && sudo -u proxy -- /usr/local/squid/libexec/security_file_certgen -c -s /usr/local/squid/var/logs/ssl_db -M 20MB && \
+# sudo sysctl -w net.ipv6.conf.eth0.disable_ipv6=0 && sudo sysctl -w net.ipv6.conf.lo.disable_ipv6=0  && sysctl -p && \
+RUN sudo chown -R proxy:proxy /usr/local/squid && sudo -u proxy -- /usr/local/squid/libexec/security_file_certgen -c -s /usr/local/squid/var/logs/ssl_db -M 20MB 
+## && \
 # sudo -u proxy -- /usr/local/squid/sbin/squid -z
 
 COPY squid-start.sh /squid-start.sh
 
 RUN chmod +x /squid-start.sh
 
-CMD ["/bin/bash -c /squid-start.sh"]
-
-
+ENTRYPOINT [/bin/bash /squid-start.sh]

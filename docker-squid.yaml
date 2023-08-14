@@ -2,7 +2,7 @@
 services:
   squid-https:
     container_name: squid-https
-    image: piragenthdocker/squid:latest
+    image: piragenthdocker/squid6-kali:latest
     restart: always
     ports:
       - 3128:3128

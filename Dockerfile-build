@@ -1,0 +1,7 @@
+FROM piragenthdocker/squid:latest
+
+COPY squid-start.sh /squid-start.sh
+
+RUN chmod +x /squid-start.sh
+
+ENTRYPOINT ["./squid-start.sh"]

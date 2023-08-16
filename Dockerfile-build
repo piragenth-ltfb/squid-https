@@ -1,4 +1,4 @@
-FROM piragenthdocker/squid:latest
+FROM piragenthdocker/squid-https:latest
 
 COPY squid-start.sh /squid-start.sh
 
